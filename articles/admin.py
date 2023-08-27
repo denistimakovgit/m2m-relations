@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import BaseInlineFormSet
-from .models import Article, Category, Scope
+from .models import Article, Tag, Scope
 
 class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
@@ -14,7 +14,7 @@ class ScopeInlineFormset(BaseInlineFormSet):
             # таким образом объект не будет сохранен,
             # а пользователю выведется соответствующее сообщение об ошибке
             # raise ValidationError('Тут всегда ошибка')
-            if form.cleaned_data.get('main_flag'):
+            if form.cleaned_data.get('is_main'):
                 counter += 1
         if counter > 1:
             raise ValidationError('Основным может быть только один раздел')
@@ -22,6 +22,8 @@ class ScopeInlineFormset(BaseInlineFormSet):
             raise ValidationError('Укажите основной раздел')
 
         return super().clean()  # вызываем базовый код переопределяемого метода
+
+
 
 class ScopeInline(admin.TabularInline):
     model = Scope
@@ -35,6 +37,6 @@ class ArticleAdmin(admin.ModelAdmin):
     inlines = [ScopeInline]
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['category_name']
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['name']
